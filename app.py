@@ -6,7 +6,7 @@ st.set_page_config(layout="wide")
 st.title("⚾ 나만의 응원 포스터 제작기")
 
 with st.sidebar:
-    user_text = st.text_input("응원 문구:", "홈런날려줘 멀리~멀리~!")
+    user_text = st.text_input("응원 문구:", "ex) 000(선수이름) 화이팅!")
     size_option = st.select_slider("글자 크기", options=["작게", "중간", "크게"], value="중간")
     logo_option = st.selectbox("로고 선택", ["로고 없음", "KIA", "KT", "LG", "Samsung"])
 
