@@ -23,7 +23,7 @@ draw.text((base_img.width/3, base_img.height/2), user_text, fill="white")
 # 로고 합성
 if logo_option != "로고 없음":
     logo = Image.open(f"{logo_option}.png").convert("RGBA")
-    logo = logo.resize((300, 300))
+    logo = logo.resize((200, 200))
     txt_layer.paste(logo, (50, 50), logo)
 
 # 3. 사진 위에 다 합치기
