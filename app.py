@@ -1,5 +1,6 @@
 import streamlit as st
 import base64
+import streamlit.components.v1 as components
 
 st.set_page_config(layout="wide")
 st.title("⚾ 나만의 응원 포스터 제작기")
@@ -9,13 +10,10 @@ with st.sidebar:
     size_option = st.select_slider("글자 크기", options=["작게", "중간", "크게"], value="중간")
     logo_option = st.selectbox("로고 선택", ["로고 없음", "KIA", "KT", "LG", "Samsung"])
 
-# 파일 로드 함수 (깃허브 서버 내 파일 경로)
 def get_image_base64(path):
     with open(path, "rb") as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
+        return base64.b64encode(f.read()).decode()
 
-# 베이스 64로 변환하여 로딩 (이미지 엑박 방지)
 bg_img = get_image_base64("baseball.jpg")
 logo_html = ""
 if logo_option != "로고 없음":
@@ -24,21 +22,20 @@ if logo_option != "로고 없음":
 
 font_map = {"작게": "40px", "중간": "80px", "크게": "120px"}
 
-# 최종 렌더링
-st.markdown(f"""
+# HTML 컴포넌트를 사용하여 HTML 실행 강제화
+html_code = f"""
     <div style="position: relative; width: 100%;">
         <img src="data:image/jpeg;base64,{bg_img}" style="width: 100%; border-radius: 10px;">
         {logo_html}
         <div style="
-            position: absolute; 
-            top: 50%; left: 50%; 
-            transform: translate(-50%, -50%); 
-            width: 100%; text-align: center; 
-            font-size: {font_map[size_option]}; 
-            font-weight: bold; color: #FFFF00; 
-            -webkit-text-stroke: 2px black; text-shadow: 4px 4px 0px black;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            width: 100%; text-align: center; font-size: {font_map[size_option]}; 
+            font-weight: bold; color: #FFFF00; -webkit-text-stroke: 2px black; 
+            text-shadow: 4px 4px 0px black;
         ">
             {user_text}
         </div>
     </div>
-""", unsafe_allow_html=True)
+"""
+
+components.html(html_code, height=600)
