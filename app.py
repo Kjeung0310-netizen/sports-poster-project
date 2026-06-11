@@ -9,20 +9,19 @@ st.title("⚾ 나만의 응원 포스터 제작기")
 with st.sidebar:
     user_text = st.text_input("응원 문구:", "최원준 화이팅!")
     size_option = st.select_slider("글자 크기", options=["작게", "중간", "크게"], value="중간")
-    # 삼성(Samsung) 추가 완료!
-    logo_option = st.selectbox("로고 선택", ["로고 없음", "KIA", "KT", "LG", "NC", "Samsung"])
+    # NC를 제외한 4개 구단
+    logo_option = st.selectbox("로고 선택", ["로고 없음", "KIA", "KT", "LG", "Samsung"])
 
 # 2. 이미지 작업
 base_img = Image.open("baseball.jpg").convert("RGBA")
 txt_layer = Image.new('RGBA', base_img.size, (255, 255, 255, 0))
 draw = ImageDraw.Draw(txt_layer)
 
-# 글자 그리기 (이미지 중앙 배치)
+# 글자 그리기
 draw.text((base_img.width/3, base_img.height/2), user_text, fill="white")
 
 # 로고 합성
 if logo_option != "로고 없음":
-    # 깃허브에 있는 파일명과 정확히 일치해야 합니다! (Samsung.png)
     logo = Image.open(f"{logo_option}.png").convert("RGBA")
     logo = logo.resize((300, 300))
     txt_layer.paste(logo, (50, 50), logo)
