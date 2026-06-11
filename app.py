@@ -3,39 +3,33 @@ import streamlit as st
 st.set_page_config(layout="wide")
 st.title("⚾ 나만의 응원 포스터 제작기")
 
+# 1. 사이드바
 with st.sidebar:
     user_text = st.text_input("응원 문구:", "네모안에 공을 던져")
-    size_option = st.select_slider("글자 크기", options=["작게", "중간", "크게"], value="작게")
+    size_option = st.select_slider("글자 크기", options=["작게", "중간", "크게"], value="중간")
     logo_option = st.selectbox("로고 선택", ["로고 없음", "KIA", "KT", "LG", "Samsung"])
 
+# 2. 이미지 출력 (st.image는 깃허브 파일을 아주 잘 가져옵니다)
+# 배경
+st.image("baseball.jpg", use_container_width=True)
+
+# 3. 로고와 텍스트를 따로 출력
+if logo_option != "로고 없음":
+    st.image(f"{logo_option}.png", width=150)
+
+# 글자 크기 매핑
 font_map = {"작게": "40px", "중간": "80px", "크게": "120px"}
 
-# 로고 HTML 설정
-logo_html = ""
-if logo_option != "로고 없음":
-    # 깃허브 Raw 주소 사용
-    logo_url = f"https://raw.githubusercontent.com/Kjeung0310-netizen/poster-project/main/{logo_option}.png"
-    logo_html = f'<img src="{logo_url}" style="position: absolute; top: 20px; left: 20px; width: 120px;">'
-
-# 포스터 컨테이너 (unsafe_allow_html=True가 핵심!)
+# 텍스트 출력
 st.markdown(f"""
-    <div style="position: relative; width: 100%; border-radius: 10px; overflow: hidden;">
-        <img src="https://raw.githubusercontent.com/Kjeung0310-netizen/poster-project/main/baseball.jpg" style="width: 100%;">
-        {logo_html}
-        <div style="
-            position: absolute; 
-            top: 50%; 
-            left: 50%; 
-            transform: translate(-50%, -50%); 
-            width: 100%;
-            text-align: center; 
-            font-size: {font_map[size_option]}; 
-            font-weight: bold; 
-            color: #FFFF00; 
-            -webkit-text-stroke: 2px black; 
-            text-shadow: 3px 3px 0px black;
-        ">
-            {user_text}
-        </div>
+    <div style="
+        text-align: center; 
+        font-size: {font_map[size_option]}; 
+        font-weight: bold; 
+        color: #FFFF00; 
+        -webkit-text-stroke: 2px black; 
+        text-shadow: 3px 3px 0px black;
+    ">
+        {user_text}
     </div>
 """, unsafe_allow_html=True)
