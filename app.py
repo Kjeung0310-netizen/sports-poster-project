@@ -41,7 +41,7 @@ html_code = f"""
         </div>
     </div>
 """
-components.html(html_code, height=600)
+components.html(html_code, height=700)
 
 st.write("—")
 with open("baseball.jpg", "rb") as f:
