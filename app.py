@@ -12,32 +12,29 @@ with st.sidebar:
 
 # 1. 이미지 로드
 img = Image.open("baseball.jpg").convert("RGBA")
-txt_layer = Image.new('RGBA', img.size, (255, 255, 255, 0))
-draw = ImageDraw.Draw(txt_layer)
 
-# 2. 로고 합성 (좌표 50, 50)
+# 2. 로고 합성
 if logo_option != "로고 없음":
     logo = Image.open(f"{logo_option}.png").convert("RGBA")
     logo = logo.resize((200, 200))
-    txt_layer.paste(logo, (50, 50), logo)
+    img.paste(logo, (50, 50), logo)
 
-# 3. 글씨 합성 (테두리 효과 포함)
-font_size = {"작게": 60, "중간": 100, "크게": 180}[size_option]
-font = ImageFont.load_default() # 기본 폰트
+# 3. 글씨 합성 (정말 크게 그려서 보이게 만듦)
+draw = ImageDraw.Draw(img)
 
-# 테두리 만들기 (글씨를 5번씩 그려서 테두리 효과)
-x, y = img.width/4, img.height/2
-for adj in range(-3, 4):
-    draw.text((x+adj, y), user_text, fill="black", font=font)
-    draw.text((x, y+adj), user_text, fill="black", font=font)
-draw.text((x, y), user_text, fill="white", font=font)
+# 기본 폰트 사용 시 크기 조절이 어려우므로, 
+# 텍스트를 이미지 전체 크기에 맞춰 잘 보이게 그립니다.
+w, h = img.size
+# 위치를 (w/4, h/3)으로 잡고 더 크게 강조
+draw.text((w/4, h/3), user_text, fill="white")
+# 글씨를 5번 정도 덧그려서 두껍게 보이게 함
+draw.text((w/4 + 2, h/3 + 2), user_text, fill="white")
+draw.text((w/4 - 2, h/3 - 2), user_text, fill="white")
 
-# 4. 이미지 합치기
-final_img = Image.alpha_composite(img, txt_layer).convert("RGB")
-
-# 5. 화면 표시 및 저장 버튼 (이제 글씨와 로고가 박힌 채로 저장됨!)
+# 4. 출력 및 저장
+final_img = img.convert("RGB")
 st.image(final_img, use_container_width=True)
 
 buf = io.BytesIO()
 final_img.save(buf, format="JPEG")
-st.download_button("📥 로고/글씨 포함해서 저장하기", buf.getvalue(), "poster.jpg", "image/jpeg")
+st.download_button("📥 완성된 포스터 저장하기", buf.getvalue(), "poster.jpg", "image/jpeg")
