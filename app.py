@@ -5,34 +5,41 @@ import io
 st.set_page_config(layout="wide")
 st.title("⚾ 나만의 응원 포스터 제작기")
 
-# 1. 사이드바 설정
 with st.sidebar:
-    user_text = st.text_input("응원 문구:", "최원준 화이팅!")
+    user_text = st.text_input("응원 문구:", "원준아")
     size_option = st.select_slider("글자 크기", options=["작게", "중간", "크게"], value="중간")
-    # NC를 제외한 4개 구단
     logo_option = st.selectbox("로고 선택", ["로고 없음", "KIA", "KT", "LG", "Samsung"])
 
-# 2. 이미지 작업
+# 1. 이미지 로드
 base_img = Image.open("baseball.jpg").convert("RGBA")
-txt_layer = Image.new('RGBA', base_img.size, (255, 255, 255, 0))
-draw = ImageDraw.Draw(txt_layer)
 
-# 글자 그리기
-draw.text((base_img.width/3, base_img.height/2), user_text, fill="white")
-
-# 로고 합성
+# 2. 로고 합성
 if logo_option != "로고 없음":
     logo = Image.open(f"{logo_option}.png").convert("RGBA")
     logo = logo.resize((200, 200))
-    txt_layer.paste(logo, (50, 50), logo)
+    base_img.paste(logo, (50, 50), logo)
 
-# 3. 사진 위에 다 합치기
-final_img = Image.alpha_composite(base_img, txt_layer).convert("RGB")
-
-# 4. 화면 출력
+# 3. 텍스트 합성 (한글 깨짐 방지를 위해 이미지 위에 글씨를 쓰는 대신, Streamlit 기능 활용)
+final_img = base_img.convert("RGB")
 st.image(final_img, use_container_width=True)
 
-# 5. 저장 버튼
+# 글자를 사진 안에 띄우기 위해 마크다운으로 사진 위에 겹쳐보이게 배치
+font_map = {"작게": "40px", "중간": "80px", "크게": "120px"}
+st.markdown(f"""
+    <div style="
+        position: relative; 
+        margin-top: -350px; 
+        text-align: center; 
+        font-size: {font_map[size_option]}; 
+        font-weight: bold; 
+        color: white; 
+        text-shadow: 3px 3px 10px black;
+    ">
+        {user_text}
+    </div>
+""", unsafe_allow_html=True)
+
+# 4. 저장 버튼
 buf = io.BytesIO()
 final_img.save(buf, format="JPEG")
 st.download_button("📥 완성된 포스터 저장하기", buf.getvalue(), "poster.jpg", "image/jpeg")
