@@ -18,9 +18,25 @@ with col2:
     st.image(img, use_container_width=True)
     font_map = {"작게": "30px", "중간": "60px", "크게": "90px"}
     
-    st.markdown(f"""
-        <div style="text-align: center; font-size: {font_map[size_option]}; font-weight: bold; color: white; text-shadow: 3px 3px 5px black; margin-top: -285
-    px;">
+       st.markdown(f"""
+        <div style="position: relative;">
+            <div style="
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 100%;
+                font-size: {font_map[size_option]}; 
+                font-weight: bold; 
+                color: white; 
+                text-shadow: 3px 3px 5px black;
+                text-align: center;
+            ">
+                {user_text}
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+    
             {user_text}
         </div>
     """, unsafe_allow_html=True)
