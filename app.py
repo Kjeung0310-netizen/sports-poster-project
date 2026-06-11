@@ -5,26 +5,21 @@ import io
 st.set_page_config(layout="wide")
 st.title("⚾ 나만의 응원 포스터 제작기")
 
-# 사진 불러오기 (이름을 baseball.jpg로 맞췄습니다)
-img = Image.open("baseball.jpg")
-
 with st.sidebar:
-    user_text = st.text_input("문구 입력:", "최원준 화이팅!")
+    user_text = st.text_input("응원 문구를 입력하세요!", "최원준 화이팅!")
     size_option = st.select_slider("글자 크기", options=["작게", "중간", "크게"], value="중간")
 
 col1, col2 = st.columns([1, 2])
 
 with col2:
-    st.image(img, use_container_width=True)
+    st.image("baseball.jpg", use_container_width=True)
     font_map = {"작게": "30px", "중간": "60px", "크게": "90px"}
     
-       st.markdown(f"""
+    st.markdown(f"""
         <div style="position: relative;">
             <div style="
                 position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
+                top: -300px;
                 width: 100%;
                 font-size: {font_map[size_option]}; 
                 font-weight: bold; 
@@ -36,11 +31,8 @@ with col2:
             </div>
         </div>
     """, unsafe_allow_html=True)
-    
-            {user_text}
-        </div>
-    """, unsafe_allow_html=True)
 
     buf = io.BytesIO()
+    img = Image.open("baseball.jpg")
     img.save(buf, format="JPEG")
-    st.download_button("📥 이미지 저장", buf.getvalue(), "poster.jpg", "image/jpeg")
+    st.download_button("📥 포스터 파일 저장하기", buf.getvalue(), "poster.jpg", "image/jpeg")
