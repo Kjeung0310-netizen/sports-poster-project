@@ -40,3 +40,5 @@ st.image(final_img, use_container_width=True)
 buf = io.BytesIO()
 final_img.save(buf, format="JPEG")
 st.download_button("📥 완성된 포스터 저장하기", buf.getvalue(), "poster.jpg", "image/jpeg")
+user_text = st.text_area("응원 문구 (입력 후 아래 버튼 클릭!):", "원준아\n멀티히트 가자!")
+submit = st.button("포스터에 적용하기") # 버튼 추가
