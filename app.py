@@ -1,45 +1,43 @@
 import streamlit as st
-import base64
+from PIL import Image, ImageDraw, ImageFont
 import io
 
 st.set_page_config(layout="wide")
 st.title("⚾ 나만의 응원 포스터 제작기")
 
 with st.sidebar:
-    user_text = st.text_input("응원 문구:", "홈런쳐줘 멀리~ 멀리~!")
+    user_text = st.text_input("응원 문구:", "원준아!")
     size_option = st.select_slider("글자 크기", options=["작게", "중간", "크게"], value="중간")
     logo_option = st.selectbox("로고 선택", ["로고 없음", "KIA", "KT", "LG", "Samsung"])
 
-def get_image_base64(path):
-    with open(path, "rb") as f:
-        return base64.b64encode(f.read()).decode()
+# 1. 이미지 로드
+img = Image.open("baseball.jpg").convert("RGBA")
+txt_layer = Image.new('RGBA', img.size, (255, 255, 255, 0))
+draw = ImageDraw.Draw(txt_layer)
 
-bg_img = get_image_base64("baseball.jpg")
-logo_html = ""
+# 2. 로고 합성 (좌표 50, 50)
 if logo_option != "로고 없음":
-    logo_img = get_image_base64(f"{logo_option}.png")
-    # top 값을 50px로 내려서 위치 조정
-    logo_html = f'<img src="data:image/png;base64,{logo_img}" style="width: 150px; position: absolute; top: 50px; left: 20px;">'
+    logo = Image.open(f"{logo_option}.png").convert("RGBA")
+    logo = logo.resize((200, 200))
+    txt_layer.paste(logo, (50, 50), logo)
 
-font_map = {"작게": "40px", "중간": "80px", "크게": "120px"}
+# 3. 글씨 합성 (테두리 효과 포함)
+font_size = {"작게": 60, "중간": 100, "크게": 180}[size_option]
+font = ImageFont.load_default() # 기본 폰트
 
-# 포스터 출력
-st.markdown(f"""
-    <div style="position: relative; width: 100%; font-family: Arial, sans-serif;">
-        <img src="data:image/jpeg;base64,{bg_img}" style="width: 100%; border-radius: 10px;">
-        {logo_html}
-        <div style="
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            width: 100%; text-align: center; font-size: {font_map[size_option]}; 
-            font-weight: bold; color: white; -webkit-text-stroke: 2px black; 
-            text-shadow: 4px 4px 0px black;
-        ">
-            {user_text}
-        </div>
-    </div>
-""", unsafe_allow_html=True)
+# 테두리 만들기 (글씨를 5번씩 그려서 테두리 효과)
+x, y = img.width/4, img.height/2
+for adj in range(-3, 4):
+    draw.text((x+adj, y), user_text, fill="black", font=font)
+    draw.text((x, y+adj), user_text, fill="black", font=font)
+draw.text((x, y), user_text, fill="white", font=font)
 
-# 저장 버튼은 화면 바로 아래에 배치
-st.write("---")
-with open("baseball.jpg", "rb") as f:
-    st.download_button("📥 포스터 저장하기", f.read(), "poster.jpg", "image/jpeg")
+# 4. 이미지 합치기
+final_img = Image.alpha_composite(img, txt_layer).convert("RGB")
+
+# 5. 화면 표시 및 저장 버튼 (이제 글씨와 로고가 박힌 채로 저장됨!)
+st.image(final_img, use_container_width=True)
+
+buf = io.BytesIO()
+final_img.save(buf, format="JPEG")
+st.download_button("📥 로고/글씨 포함해서 저장하기", buf.getvalue(), "poster.jpg", "image/jpeg")
