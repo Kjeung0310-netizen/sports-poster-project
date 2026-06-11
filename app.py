@@ -18,7 +18,7 @@ bg_img = get_image_base64("baseball.jpg")
 logo_html = ""
 if logo_option != "로고 없음":
     logo_img = get_image_base64(f"{logo_option}.png")
-    logo_html = f'<img src="data:image/png;base64,{logo_img}" style="width: 150px; position: absolute; top: 20px; left: 20px;">'
+    logo_html = f'<img src="data:image/png;base64,{logo_img}" style="width: 150px; position: absolute; top: 20px; left: 30px;">'
 
 font_map = {"작게": "40px", "중간": "80px", "크게": "120px"}
 
