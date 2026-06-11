@@ -19,7 +19,8 @@ with col2:
     font_map = {"작게": "30px", "중간": "60px", "크게": "90px"}
     
     st.markdown(f"""
-        <div style="text-align: center; font-size: {font_map[size_option]}; font-weight: bold; color: white; text-shadow: 3px 3px 5px black; margin-top: -300px;">
+        <div style="text-align: center; font-size: {font_map[size_option]}; font-weight: bold; color: white; text-shadow: 3px 3px 5px black; margin-top: -220
+    px;">
             {user_text}
         </div>
     """, unsafe_allow_html=True)
