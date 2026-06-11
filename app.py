@@ -1,40 +1,45 @@
 import streamlit as st
-from PIL import Image, ImageDraw, ImageFont
+import base64
 import io
 
 st.set_page_config(layout="wide")
 st.title("⚾ 나만의 응원 포스터 제작기")
 
 with st.sidebar:
-    user_text = st.text_input("응원 문구:", "원준아!")
+    user_text = st.text_input("응원 문구:", "홈런날려줘 멀리~멀리~!")
     size_option = st.select_slider("글자 크기", options=["작게", "중간", "크게"], value="중간")
     logo_option = st.selectbox("로고 선택", ["로고 없음", "KIA", "KT", "LG", "Samsung"])
 
-# 1. 이미지 로드
-img = Image.open("baseball.jpg").convert("RGBA")
+def get_image_base64(path):
+    with open(path, "rb") as f:
+        return base64.b64encode(f.read()).decode()
 
-# 2. 로고 합성
+bg_img = get_image_base64("baseball.jpg")
+logo_html = ""
 if logo_option != "로고 없음":
-    logo = Image.open(f"{logo_option}.png").convert("RGBA")
-    logo = logo.resize((200, 200))
-    img.paste(logo, (50, 50), logo)
+    logo_img = get_image_base64(f"{logo_option}.png")
+    # top 값을 50px로 내려서 위치 조정
+    logo_html = f'<img src="data:image/png;base64,{logo_img}" style="width: 150px; position: absolute; top: 50px; left: 20px;">'
 
-# 3. 글씨 합성 (정말 크게 그려서 보이게 만듦)
-draw = ImageDraw.Draw(img)
+font_map = {"작게": "40px", "중간": "80px", "크게": "120px"}
 
-# 기본 폰트 사용 시 크기 조절이 어려우므로, 
-# 텍스트를 이미지 전체 크기에 맞춰 잘 보이게 그립니다.
-w, h = img.size
-# 위치를 (w/4, h/3)으로 잡고 더 크게 강조
-draw.text((w/4, h/3), user_text, fill="white")
-# 글씨를 5번 정도 덧그려서 두껍게 보이게 함
-draw.text((w/4 + 2, h/3 + 2), user_text, fill="white")
-draw.text((w/4 - 2, h/3 - 2), user_text, fill="white")
+# 포스터 출력
+st.markdown(f"""
+    <div style="position: relative; width: 100%; font-family: Arial, sans-serif;">
+        <img src="data:image/jpeg;base64,{bg_img}" style="width: 100%; border-radius: 10px;">
+        {logo_html}
+        <div style="
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            width: 100%; text-align: center; font-size: {font_map[size_option]}; 
+            font-weight: bold; color: white; -webkit-text-stroke: 2px black; 
+            text-shadow: 4px 4px 0px black;
+        ">
+            {user_text}
+        </div>
+    </div>
+""", unsafe_allow_html=True)
 
-# 4. 출력 및 저장
-final_img = img.convert("RGB")
-st.image(final_img, use_container_width=True)
-
-buf = io.BytesIO()
-final_img.save(buf, format="JPEG")
-st.download_button("📥 완성된 포스터 저장하기", buf.getvalue(), "poster.jpg", "image/jpeg")
+# 저장 버튼은 화면 바로 아래에 배치
+st.write("---")
+with open("baseball.jpg", "rb") as f:
+    st.download_button("📥 포스터 저장하기", f.read(), "poster.jpg", "image/jpeg")
