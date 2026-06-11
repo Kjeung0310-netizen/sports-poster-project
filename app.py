@@ -22,9 +22,9 @@ if logo_option != "로고 없음":
 
 font_map = {"작게": "40px", "중간": "80px", "크게": "120px"}
 
-# HTML 컴포넌트를 사용하여 HTML 실행 강제화
+# 폰트 스타일을 'Arial, sans-serif'로 지정하여 깔끔하게 변경
 html_code = f"""
-    <div style="position: relative; width: 100%;">
+    <div style="position: relative; width: 100%; font-family: Arial, sans-serif;">
         <img src="data:image/jpeg;base64,{bg_img}" style="width: 100%; border-radius: 10px;">
         {logo_html}
         <div style="
@@ -38,4 +38,5 @@ html_code = f"""
     </div>
 """
 
-components.html(html_code, height=600)
+# 높이를 사진 비율에 맞춰 700 정도로 넉넉하게 주었습니다.
+components.html(html_code, height=700)
